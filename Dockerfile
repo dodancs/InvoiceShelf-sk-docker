@@ -58,10 +58,10 @@ RUN \
     addgroup --gid "$PGID" "$USER" && \
     adduser --gecos '' --no-create-home --disabled-password --uid "$PUID" --gid "$PGID" "$USER" && \
     cd /var/www/html && \
-    LATEST_VERSION=$(curl -sX GET https://api.github.com/repos/InvoiceShelf/InvoiceShelf/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
+    LATEST_VERSION=$(curl -sX GET https://api.github.com/repos/dodancs/InvoiceShelf-sk/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
     if [ "$TARGET" = "release" ] ; then RELEASE_TAG="-b $LATEST_VERSION" ; \
     elif [ "$BRANCH" != "master" ] ; then RELEASE_TAG="-b $BRANCH" ; fi && \
-    git clone --depth 1 $RELEASE_TAG https://github.com/InvoiceShelf/InvoiceShelf.git && \
+    git clone --depth 1 $RELEASE_TAG https://github.com/dodancs/InvoiceShelf-sk.git InvoiceShelf && \
     mv InvoiceShelf/.git/refs/heads/$BRANCH InvoiceShelf/$BRANCH || cp InvoiceShelf/.git/HEAD InvoiceShelf/$BRANCH && \
     mv InvoiceShelf/.git/HEAD InvoiceShelf/HEAD && \
     rm -r InvoiceShelf/.git/* && \
