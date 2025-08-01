@@ -2,7 +2,7 @@
 
 ![Supports amd64 Architecture][amd64-shield]  ![Supports arm64/aarch64 Architecture][arm64-shield]  ![Supports armv7 Architecture][armv7-shield]
 
-[![Build and Push Release](https://github.com/InvoiceShelf/docker/actions/workflows/build_push_release.yml/badge.svg)](https://github.com/InvoiceShelf/docker/actions/workflows/build_push_release.yml)
+[![Build and Push Release](https://github.com/dodancs/InvoiceShelf-sk-docker/actions/workflows/build_push_release.yml/badge.svg)](https://github.com/dodancs/InvoiceShelf-sk-docker/actions/workflows/build_push_release.yml)
 
 ## Table of Contents
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->  
@@ -44,7 +44,7 @@ As you can see in the above table, all docker tags have different purpose. To su
 - If you want the latest stable version that is **pending release**, use :nightly or :dev
 - If you want the very latest code,  **regardless of stability**, use :alpha
 
-Best of both worlds (stable/unstable) is **invoiceshelf/invoiceshelf:nightly**. This way you have tested changes that aren't yet released but are definitely making their way into the upcoming release.
+Best of both worlds (stable/unstable) is **ghcr.io/dodancs/invoiceshelf-sk:nightly**. This way you have tested changes that aren't yet released but are definitely making their way into the upcoming release.
 
 ## Quick Start
 
@@ -65,7 +65,7 @@ docker run -d \--name=invoiceshelf \
 -e DB_CONNECTION=sqlite \
 -e STARTUP_DELAY= \
 -p 90:80 \
-invoiceshelf/invoiceshelf
+ghcr.io/dodancs/invoiceshelf-sk
 ```
 
 will start InvoiceShelf listening on a port 90 and the data will be persisted in ./invoiceshelf/ directory.
@@ -160,7 +160,7 @@ docker run -d --name=invoiceshelf \
 -p 90:80 \
 --net network_name \
 --link db_name \
-invoiceshelf/invoiceshelf:alpha  
+ghcr.io/dodancs/invoiceshelf-sk:alpha  
 ```  
 
 **Warning** : if you use a MySQL database, make sure to use the `mysql_native_password` authentication plugin, either by using the `--default-authentication-plugin` option when starting mysql, or by running a query to enable the authentication plugin for the `invoiceshelf` user, e.g. :
@@ -184,7 +184,7 @@ The following _FILE variables are supported:
 
 ## Available environment variables and defaults
 
-If you do not provide environment variables or `.env` file, the [example .env file](https://github.com/InvoiceShelf/InvoiceShelf/blob/master/.env.example) will be used with some values already set by default.
+If you do not provide environment variables or `.env` file, the [example .env file](https://github.com/dodancs/InvoiceShelf-sk/blob/master/.env.example) will be used with some values already set by default.
 
 Some variables are specific to Docker, and the default values are :
 

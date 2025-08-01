@@ -16,47 +16,39 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@v4
       -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v3.1.0
+        uses: docker/setup-qemu-action@v3
       -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.4.0
+        uses: docker/setup-buildx-action@v3
+      - 
+        name: Log in to the ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       -
-        name: Test multiarch building
-        uses: docker/build-push-action@v6.3.0
+        name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # list of Docker images to use as base name for tags
+          images: |
+            ghcr.io/dodancs/invoiceshelf-sk
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=sha
+            testing-${{ github.run_id }}
+      -
+        name: Build and push
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm/v7,linux/arm64
-          load: false
-          push: false
-          tags: |
-            invoiceshelf/invoiceshelf:testing-${{ github.run_id }}
-      -
-        name: Save amd64 image to pass to testing
-        uses: docker/build-push-action@v6.3.0
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64
-          load: true
-          push: false
-          tags: |
-            invoiceshelf/invoiceshelf:testing-${{ github.run_id }}
-      -
-        name: Export Image and PR Number
-        run: |
-          mkdir -p ./artifact
-          docker image save -o ./artifact/invoiceshelf.tar invoiceshelf/invoiceshelf:testing-${{ github.run_id }}
-          echo "${{ github.event.number }}" > ./artifact/pr
-          echo "${{ github.sha }}" > ./artifact/sha
-          echo -e "PR: ${{ github.event.number }}\nSHA: ${{ github.sha }}\nBase ref: ${{ github.base_ref }}\nHead ref: ${{ github.head_ref }}"
-          sha256sum artifact/invoiceshelf.tar || echo 0
-      -
-        name: Store as artifact
-        uses: actions/upload-artifact@v4.3.4
-        with:
-          name: artifact
-          path: ./artifact
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+

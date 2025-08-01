@@ -19,7 +19,7 @@ services:
       - invoiceshelf
     restart: unless-stopped
   invoiceshelf:
-    image: invoiceshelf/invoiceshelf:nightly
+    image: ghcr.io/dodancs/invoiceshelf-sk:nightly
     container_name: invoiceshelf
     ports:
       - 90:80
