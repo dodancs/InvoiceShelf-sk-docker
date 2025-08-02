@@ -16,7 +16,7 @@ InvoiceShelf Branch:   $branch ($target)
 InvoiceShelf Commit:   $shorthash
 InvoiceShelf Version:  $version
 -------------------------------------
-Link to commit: https://github.com/InvoiceShelf/InvoiceShelf/commit/$longhash
+Link to commit: https://github.com/dodancs/InvoiceShelf-sk/commit/$longhash
 -------------------------------------"
 
 if [ -n "$STARTUP_DELAY" ]
