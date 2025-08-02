@@ -4,11 +4,11 @@ set -e
 
 # Read Last commit hash from .git
 # This prevents installing git, and allows display of commit
-branch=$(ls /var/www/html/InvoiceShelf/.git/refs/heads)
-read -r longhash < /var/www/html/InvoiceShelf/.git/refs/heads/$branch
+branch=$(ls /var/www/html/InvoiceShelf-sk/.git/refs/heads)
+read -r longhash < /var/www/html/InvoiceShelf-sk/.git/refs/heads/$branch
 shorthash=$(echo $longhash |cut -c1-7)
-target=$(</var/www/html/InvoiceShelf/docker_target)
-version=$(head -n 1 /var/www/html/InvoiceShelf/version.md)
+target=$(</var/www/html/InvoiceShelf-sk/docker_target)
+version=$(head -n 1 /var/www/html/InvoiceShelf-sk/version.md)
 
 echo "
 -------------------------------------
@@ -29,22 +29,22 @@ echo "**** Make sure the /conf /data folders exist ****"
 [ ! -d /data ] && mkdir -p /data
 
 echo "**** Link storage ****"
-[ ! -L /var/www/html/InvoiceShelf/storage ] && \
-	cp -r /var/www/html/InvoiceShelf/storage/* /data && \
-	rm -r /var/www/html/InvoiceShelf/storage && \
-	ln -s /data /var/www/html/InvoiceShelf/storage
+[ ! -L /var/www/html/InvoiceShelf-sk/storage ] && \
+	cp -r /var/www/html/InvoiceShelf-sk/storage/* /data && \
+	rm -r /var/www/html/InvoiceShelf-sk/storage && \
+	ln -s /data /var/www/html/InvoiceShelf-sk/storage
 
 echo "**** Expose storage ****"
-[ ! -L /var/www/html/InvoiceShelf/public/storage ] && \
-	ln -s /data/app/public /var/www/html/InvoiceShelf/public/storage
+[ ! -L /var/www/html/InvoiceShelf-sk/public/storage ] && \
+	ln -s /data/app/public /var/www/html/InvoiceShelf-sk/public/storage
 
-cd /var/www/html/InvoiceShelf
+cd /var/www/html/InvoiceShelf-sk
 
 if [ "$DB_CONNECTION" = "sqlite" ] || [ -z "$DB_CONNECTION" ] ; then
   echo "**** Configure SQLite3 database ****"
   if [ ! -n "$DB_DATABASE" ]; then
     echo "**** DB_DATABSE not defined. Fall back to default /database/database.sqlite location ****"
-    DB_DATABASE='/var/www/html/InvoiceShelf/database/database.sqlite'
+    DB_DATABASE='/var/www/html/InvoiceShelf-sk/database/database.sqlite'
   fi
   DB_FILENAME=$(basename ${DB_DATABASE});
   if [ ! -e "/conf/$DB_FILENAME" ]; then
@@ -62,9 +62,9 @@ fi
 
 echo "**** Copy the .env to /conf ****" && \
 [ ! -e /conf/.env ] && \
-	sed 's|^#DB_DATABASE=$|DB_DATABASE='$DB_DATABASE'|' /var/www/html/InvoiceShelf/.env.example > /conf/.env
-[ ! -L /var/www/html/InvoiceShelf/.env ] && \
-	ln -s /conf/.env /var/www/html/InvoiceShelf/.env
+	sed 's|^#DB_DATABASE=$|DB_DATABASE='$DB_DATABASE'|' /var/www/html/InvoiceShelf-sk/.env.example > /conf/.env
+[ ! -L /var/www/html/InvoiceShelf-sk/.env ] && \
+	ln -s /conf/.env /var/www/html/InvoiceShelf-sk/.env
 echo "**** Inject .env values ****" && \
 	/inject.sh
 
@@ -106,7 +106,7 @@ if [ -n "$SKIP_PERMISSIONS_CHECKS" ] && [ "${SKIP_PERMISSIONS_CHECKS,,}" = "yes"
 else
 	echo "**** Set Permissions ****"
 	# Set ownership of directories, then files and only when required.
-	find /var/www/html/InvoiceShelf/bootstrap -type d \( ! -perm -ug+w -o ! -perm -ugo+rX -o ! -perm -g+s \) -exec chmod -R ug+w,ugo+rX,g+s \{\} \;
+	find /var/www/html/InvoiceShelf-sk/bootstrap -type d \( ! -perm -ug+w -o ! -perm -ugo+rX -o ! -perm -g+s \) -exec chmod -R ug+w,ugo+rX,g+s \{\} \;
 	find /conf /data -type d \( ! -user "$USER" -o ! -group "$USER" \) -exec chown -R "$USER":"$USER" \{\} \;
 	find /conf /data \( ! -user "$USER" -o ! -group "$USER" \) -exec chown "$USER":"$USER" \{\} \;
 	find /conf /data -type d \( ! -perm -ug+w -o ! -perm -ugo+rX -o ! -perm -g+s \) -exec chmod -R ug+w,ugo+rX,g+s \{\} \;
