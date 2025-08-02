@@ -61,15 +61,15 @@ RUN \
     LATEST_VERSION=$(curl -sX GET https://api.github.com/repos/dodancs/InvoiceShelf-sk/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
     if [ "$TARGET" = "release" ] ; then RELEASE_TAG="-b $LATEST_VERSION" ; \
     elif [ "$BRANCH" != "master" ] ; then RELEASE_TAG="-b $BRANCH" ; fi && \
-    git clone --depth 1 $RELEASE_TAG https://github.com/dodancs/InvoiceShelf-sk.git InvoiceShelf && \
-    mv InvoiceShelf/.git/refs/heads/$BRANCH InvoiceShelf/$BRANCH || cp InvoiceShelf/.git/HEAD InvoiceShelf/$BRANCH && \
-    mv InvoiceShelf/.git/HEAD InvoiceShelf/HEAD && \
-    rm -r InvoiceShelf/.git/* && \
-    mkdir -p InvoiceShelf/.git/refs/heads && \
-    mv InvoiceShelf/HEAD InvoiceShelf/.git/HEAD && \
-    mv InvoiceShelf/$BRANCH InvoiceShelf/.git/refs/heads/$BRANCH && \
-    echo "$TARGET" > /var/www/html/InvoiceShelf/docker_target && \
-    cd /var/www/html/InvoiceShelf && \
+    git clone --depth 1 $RELEASE_TAG https://github.com/dodancs/InvoiceShelf-sk.git && \
+    mv InvoiceShelf-sk/.git/refs/heads/$BRANCH InvoiceShelf-sk/$BRANCH || cp InvoiceShelf-sk/.git/HEAD InvoiceShelf-sk/$BRANCH && \
+    mv InvoiceShelf-sk/.git/HEAD InvoiceShelf-sk/HEAD && \
+    rm -r InvoiceShelf-sk/.git/* && \
+    mkdir -p InvoiceShelf-sk/.git/refs/heads && \
+    mv InvoiceShelf-sk/HEAD InvoiceShelf-sk/.git/HEAD && \
+    mv InvoiceShelf-sk/$BRANCH InvoiceShelf-sk/.git/refs/heads/$BRANCH && \
+    echo "$TARGET" > /var/www/html/InvoiceShelf-sk/docker_target && \
+    cd /var/www/html/InvoiceShelf-sk && \
     composer install --prefer-dist && \
     find . -wholename '*/[Tt]ests/*' -delete && \
     find . -wholename '*/[Tt]est/*' -delete && \
@@ -77,8 +77,8 @@ RUN \
     rm    storage/framework/sessions/* 2> /dev/null || true && \
     rm    storage/framework/views/* 2> /dev/null || true && \
     rm    storage/logs/* 2> /dev/null || true && \
-    chown -R www-data:www-data /var/www/html/InvoiceShelf && \
-    echo "* * * * * www-data cd /var/www/html/InvoiceShelf && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
+    chown -R www-data:www-data /var/www/html/InvoiceShelf-sk && \
+    echo "* * * * * www-data cd /var/www/html/InvoiceShelf-sk && php artisan schedule:run >> /dev/null 2>&1" >> /etc/crontab && \
     apt-get purge -y --autoremove git composer && \
     apt-get clean -qy && \
     rm -rf /var/lib/apt/lists/*
@@ -91,14 +91,14 @@ RUN mkdir /app
 
 RUN mkdir -p  /app
 WORKDIR /app
-COPY --from=base /var/www/html/InvoiceShelf /app
+COPY --from=base /var/www/html/InvoiceShelf-sk /app
 
 RUN npm install
 RUN yarn build
 
 # Get the static assets built in the previous step
 FROM base
-COPY --from=static_builder --chown=www-data:www-data /app/public /var/www/html/InvoiceShelf/public
+COPY --from=static_builder --chown=www-data:www-data /app/public /var/www/html/InvoiceShelf-sk/public
 
 # Add custom Nginx configuration
 COPY default.conf /etc/nginx/nginx.conf
@@ -106,7 +106,7 @@ COPY default.conf /etc/nginx/nginx.conf
 EXPOSE 80
 VOLUME /conf /data
 
-WORKDIR /var/www/html/InvoiceShelf
+WORKDIR /var/www/html/InvoiceShelf-sk
 
 COPY entrypoint.sh inject.sh /
 
